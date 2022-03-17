@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/libgif.js"></script>
+</head>
+
+<body>
+    <img src="/sea.gif" id="sea" alt="">
+</body>
+<script>
+    var file = document.getElementById('sea');
+
+    load_gif(file);
+    function load_gif(gif_source) {
+        var gifImg = document.getElementById('sea');
+        console.log(gifImg);
+        // gif库需要img标签配置下面两个属性
+        gifImg.setAttribute('rel:animated_src', URL.createObjectURL(gif_source))
+        gifImg.setAttribute('rel:auto_play', '0')
+
+        // 新建gif实例
+        var rub = new SuperGif({ gif: gifImg });
+
+        var running = false;
+        rub.load(function () {
+            var img_list = [];
+            var j = 0;
+            console.log(rub.get_length());
+            for (var i = 1; i <= rub.get_length(); i++) {
+                // 遍历gif实例的每一帧
+                rub.move_to(i);
+
+                var imgImage = new Image();
+                //canvas生成base64图片数据
+                imgImage.src = rub.get_canvas().toDataURL('image/jpeg', 0.8);
+            }
+        })
+    }
+</script>
+
+</html>

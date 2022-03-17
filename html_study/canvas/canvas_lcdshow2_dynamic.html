@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <canvas id="offcanvas" width="64" height="32"></canvas><br>
+        <canvas id="canvas" width="640" height="320"></canvas>
+    </div>
+</body>
+<script>
+    var inputText = '果果'
+    console.log(inputText.length)
+    offcanvas = document.getElementById('offcanvas') //获取一个64宽32高的画布
+    var offctx = offcanvas.getContext('2d') //获取上下文
+    offctx.font = ' 32px 黑体' //设置字体 'bold 32px 黑体'
+    offctx.textBaseline = 'top' //设置文字的起始点坐标，左上角
+    offctx.fillRect(0,0,64,32) //画布整体涂黑
+    var gradient = offctx.createLinearGradient(0,0,64,0)//创建一个渐变
+    gradient.addColorStop(0,'red') //添加渐变点
+    gradient.addColorStop(0.5,'green') //添加渐变点
+    gradient.addColorStop(1,'blue') //添加渐变点
+    offctx.fillStyle= 'white' //设置填充颜色为 `white` 或者 gradient
+    offctx.fillText(inputText,0,0) //写上文字
+    var data = offctx.getImageData(0,0,64,32) //获取画布数据 每个像素占四个下标，分别是 R G B Alaph
+    
+
+    //使用高阶函数filter过滤掉data数组中的alaph位
+    var noAlaphData = data.data.filter(function(element,index,self){
+        return index%4 != 3
+    })
+
+    //单片机需要的drawRGBBitmap uint16数组 宽度 高度 
+    var uint16Data = new Uint16Array(noAlaphData.length/3)
+    for (let i=0; i<noAlaphData.length;i+=3){
+        uint16Data[i/3] = (noAlaphData[i] & 0xF8) << 8 | (noAlaphData[i+1] & 0xFC) << 3 | (noAlaphData[i+2] &0xF8)>>3
+    }
+    
+    //使用高阶函数map对图像进行阈值操作，其实也可以不使用阈值函数（真机测试）
+    function yuzhi(x){  //阈值操作
+        if (x > 190) return 255
+        else return 0
+    }
+    var yuzhiData = noAlaphData.map(yuzhi)
+
+    //将data.data使用map函数阈值操作
+    var c =  new Uint8Array()
+    c = data.data.map(yuzhi)
+    for (let i in data.data){  // 数组不可以直接赋值给对象中的数组，要用for。。。in
+        data.data[i] = c[i]
+    }
+
+    //获取大画布320*640的标签对象和上下文 
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+
+    //用10*10的正方形块为一个像素，将data.data画在大画布上
+    for (let j = 0; j < data.width; j++) {
+        for (let i = 0; i < data.height; i++) {
+            ctx.fillStyle = "rgba(" + data.data[(i*data.width + j)*4] + ','+ data.data[(i*data.width + j)*4+1 ] +','+ data.data[(i*data.width + j)*4+2] +','+ data.data[(i*data.width + j)*4+3] +')'
+            ctx.fillRect(j*10,i*10, 10,10)
+        }
+    }
+
+    //定时执行任务
+    function task(){
+        //x方向的位置动画效果
+        if(pos < -64) pos=0
+        pos-- 
+        //获取data。data数据
+        offctx.fillStyle= "black"
+        offctx.fillRect(0,0,64,32)
+        offctx.fillStyle= gradient
+        offctx.fillText(inputText,pos,0)
+        let data1 = offctx.getImageData(0,0,64,32)
+
+        // let d =  new Uint8Array()
+        // d = data1.data.map(yuzhi)
+        // for (let i in data1.data){
+        //     data1.data[i] = d[i]
+        // }
+
+        // 用获取到的data。data绘制画布，每次的数据都不一样
+        for (let j = 0; j < data.width; j++) {
+            for (let i = 0; i < data.height; i++) {
+                ctx.fillStyle = "rgba(" + data1.data[(i*data.width + j)*4] + ','+ data1.data[(i*data.width + j)*4+1 ] +','+ data1.data[(i*data.width + j)*4+2] +','+ data1.data[(i*data.width + j)*4+3] +')'
+                ctx.fillRect(j*10, i*10, 10,10)
+            }
+        }
+    }
+    var pos = 0
+    // setInterval("task()",200) 
+</script>
+
+</html>

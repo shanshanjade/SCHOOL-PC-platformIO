@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        #canvas {
+            border-style: solid;
+            border-style: dotted;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <canvas id="offcanvas" width="48" height="16"></canvas><br>
+        <canvas id="canvas" width="960" height="320"></canvas>
+    </div>
+</body>
+<script>
+    offcanvas = document.getElementById('offcanvas')
+    var offctx = offcanvas.getContext('2d')
+    offctx.font = '16px 宋体'
+    offctx.textBaseline = 'top'
+    offctx.fillRect(0,0,48,16)
+    var gradient = offctx.createLinearGradient(0,0,48,0)
+    gradient.addColorStop(0,'red')
+    gradient.addColorStop(1,'blue')
+    offctx.fillStyle= gradient
+    offctx.fillText('纷色分sadfads',0,0)
+    var data = offctx.getImageData(0,0,48,16)
+    console.log(data.width,data.height)
+    var canvas = document.getElementById('canvas')
+    
+    var ctx = canvas.getContext('2d')
+
+    for (let j = 0; j < data.width; j++) {
+        for (let i = 0; i < data.height; i++) {
+            ctx.fillStyle = "rgba(" + data.data[(i*data.width + j)*4] + ','+ data.data[(i*data.width + j)*4+1 ] +','+ data.data[(i*data.width + j)*4+2] +','+ data.data[(i*data.width + j)*4+3] +')'
+            ctx.fillRect(j*20,i*20, 20,20)
+        }
+        
+    }
+    function task(){
+        if(pos < -60) pos=0
+        pos--
+        offctx.fillStyle= "black"
+        offctx.fillRect(0,0,48,16)
+        offctx.fillStyle= gradient
+        offctx.fillText('纷色分好多了',pos,0)
+        var data = offctx.getImageData(0,0,48,16)
+        for (let j = 0; j < data.width; j++) {
+        for (let i = 0; i < data.height; i++) {
+            ctx.fillStyle = "rgba(" + data.data[(i*data.width + j)*4] + ','+ data.data[(i*data.width + j)*4+1 ] +','+ data.data[(i*data.width + j)*4+2] +','+ data.data[(i*data.width + j)*4+3] +')'
+            ctx.fillRect(j*20,i*20, 20,20)
+        }
+        
+    }
+
+    }
+    var pos = 0
+    setInterval("task()",100) 
+    // ctx.fillStyle = 'black'
+    // ctx.fillRect(0,0,16,16)
+    // ctx.font = '16px SimSun'
+    // ctx.textBaseline = 'top'
+    // ctx.fillText('国', 0, 0, 16, 16)
+    // ctx.putImageData(data,100,100)
+</script>
+
+</html>

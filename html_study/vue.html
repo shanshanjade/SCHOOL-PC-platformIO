@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <script src="/vue.min.js"></script>
+    <script src="/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>删除图片</h1>
+        <div v-for="(item, index) in imageList" :key="item">
+            <img :src="item">
+            <button @click="deleteImage(index)" :name="item">删除</button>
+            <span>{{ item }}</span>
+        </div>
+    </div>
+</body>
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data: {
+            imageList: [
+                '/box.gif',
+                '/5star.gif',
+                '/sea.gif'
+            ]
+        },
+        methods: {
+            deleteImage(e) {
+                console.log(e);
+                this.imageList.splice(e, 1)
+                this.xhttp();
+            },
+            xhttp() {
+                this.imageList = [];
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        var i
+                        var json;
+                        var st = '';
+                        json = JSON.parse(xhttp.responseText);
+                        for (i in json.name) {
+                            this.imageList.push(json.name[i])
+                        }
+                    }
+                };
+                xhttp.open("GET", "/list", true);
+                xhttp.send();
+            }
+        }
+    })
+</script>
+<style>
+    img {
+        width: 40%;
+        image-rendering: pixelated;
+    }
+</style>
+
+</html>

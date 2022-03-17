@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>obj_test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #canvas {
+            box-sizing: border-box;
+            width: 345px;
+            height: 375px;
+            display: inline-block;
+        }
+
+        #canvas1 {
+            box-sizing: border-box;
+            width: 30px;
+            height: 375px;
+        }
+        #canvas2{
+            box-sizing: border-box;
+            width: 375px;
+            height: 50px;
+        }
+        #canvas3 {
+            width: 320px;
+            height: 80px;
+        }
+        #position {
+            width: 375px;
+            display: inline-block;
+        }
+        #text {
+            width: 370px;
+        }
+        div button {
+            width: 185px;
+            height: 40px;
+            background-color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" width="400px" height="400px"></canvas><canvas id="canvas1" width="400px" height="400px"></canvas><br>
+        <canvas id="canvas2" width="400px" height="400px"></canvas><br>
+        <input id="position" type="range" name="position" step="0.01" min="0" max="1" onchange="rangeChange(this.value)"><br>
+        
+        
+        
+        <button id="add" onclick="add()">增加</button>
+        <button id="clear" onclick="clear11()">清空</button><br>
+        <input id="text" type="text" name="text1" value="国家" onblur="textChange(this.value)"><br>
+        <canvas id="canvas3" width="320px" height="80px"></canvas>
+    </div>
+</body>
+<script>
+
+    var position = []
+    var color = []
+    var sColor = 'cyan'
+
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+    
+    var canvas1 = document.getElementById('canvas1')
+    var ctx1 = canvas1.getContext('2d')
+
+    var canvas2 = document.getElementById('canvas2')
+    var ctx2 = canvas2.getContext('2d')
+
+    var canvas3 = document.getElementById('canvas3')
+    var ctx3 = canvas3.getContext('2d')
+    ctx3.imageSmoothingEnabled = false 
+    ctx3.mozImageSmoothingEnabled = false
+    ctx3.webkitImageSmoothingEnabled = false
+    ctx3.msImageSmoothingEnabled = false
+
+    var offCanvas = new OffscreenCanvas(32, 30*32)
+    var offctx = offCanvas.getContext('2d')
+
+
+    //初始化canvas绘制,通过监听点击事件获取颜色
+    let gradient = ctx.createLinearGradient(0,0,400,0)
+    gradient.addColorStop(0.2,'white')
+    gradient.addColorStop(0.9,sColor)
+    ctx.fillStyle = gradient
+    ctx.fillRect(0,0,400,400)
+    let gradient_mask = ctx.createLinearGradient(0,0,0,400)
+    gradient_mask.addColorStop(0.2,'transparent')
+    gradient_mask.addColorStop(0.9,'black')
+    ctx.fillStyle = gradient_mask
+    ctx.fillRect(0,0,400,400)
+    canvas.addEventListener('mouseup',function(e){
+        let color = ctx.getImageData(e.offsetX, e.offsetY, 1, 1).data
+        sColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        document.getElementById('add').style.backgroundColor = sColor
+    })
+
+    //初始化canvas1绘制色相条，通过监听点击事件获取颜色
+    var gradient1 = ctx1.createLinearGradient(0, 0, 0, 400)
+    gradient1.addColorStop(0, 'red')
+    gradient1.addColorStop(1 / 7, 'orange')
+    gradient1.addColorStop(2 / 7, 'yellow')
+    gradient1.addColorStop(3 / 7, 'green')
+    gradient1.addColorStop(4 / 7, 'cyan')
+    gradient1.addColorStop(5 / 7, 'blue')
+    gradient1.addColorStop(6 / 7, 'purple')
+    gradient1.addColorStop(1, 'red')
+    ctx1.fillStyle = gradient1
+    ctx1.fillRect(0, 0, 400, 400)
+    canvas1.addEventListener('mouseup', function (e) {
+        let color = ctx1.getImageData(e.offsetX, e.offsetY, 1, 1).data
+        console.log(color)
+        sColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        document.getElementById('add').style.backgroundColor = sColor
+        let gradient = ctx.createLinearGradient(0,0,400,0)
+        gradient.addColorStop(0.2,'white')
+        gradient.addColorStop(0.9,sColor)
+        ctx.fillStyle = gradient
+        ctx.fillRect(0,0,400,400)
+        let gradient_mask = ctx.createLinearGradient(0,0,0,400)
+        gradient_mask.addColorStop(0.2,'transparent')
+        gradient_mask.addColorStop(0.9,'black')
+        ctx.fillStyle = gradient_mask
+        ctx.fillRect(0,0,400,400)
+    })
+
+    //初始化canvas3 底色涂黑
+    ctx3.fillStyle = 'black'
+    ctx3.fillRect(0,0,320,80)
+
+    var textLength
+    function textChange(val){
+        textLength = val.length
+        offctx.fillStyle = 'black'
+        offctx.fillRect(0,0,32,32*textLength*32)
+        offctx.textBaseline = 'top' //设置文字的起始点坐标，左上角
+
+        let offGradient =  offctx.createLinearGradient(0,0,0,textLength*32)
+        offGradient.addColorStop(0, 'white')
+        for (let i in position) {
+            offGradient.addColorStop(position[i], color[i])
+        }
+        offGradient.addColorStop(1, 'white')
+        offctx.fillStyle = offGradient
+        offctx.font = '32px 宋体'
+        for(let i in val){
+            offctx.fillText(val[i],0,32*i)
+        }
+        var offData =  offctx.getImageData(0,0,32,textLength*32)
+        console.log(offData.data)
+
+        // ctx3.drawImage(offCanvas,0,0,320,textLength*32*10)
+        // // for (let j = 0; j < offData.width; j++) {
+        // //     for (let i = 0; i < offData.height; i++) {
+        // //         ctx3.fillStyle = "rgba(" + offData.data[(i*offData.width + j)*4] + ','+ offData.data[(i*offData.width + j)*4+1 ] +','+ offData.data[(i*offData.width + j)*4+2] +','+ offData.data[(i*offData.width + j)*4+3] +')'
+        // //         ctx3.fillRect(j*10,i*10, 10,10)
+        // //     }
+        // // }
+
+
+    }
+    function rangeChange(val) {
+        var gradient = ctx2.createLinearGradient(0, 0, 400, 0)
+        gradient.addColorStop(0, 'white')
+        for (let i in position) {
+            gradient.addColorStop(position[i], color[i])
+        }
+        gradient.addColorStop(1, 'white')
+        ctx2.fillStyle = gradient
+        ctx2.fillRect(0, 0, 400, 400)
+    }
+
+    function add() {
+        position.push(document.getElementById('position').value)
+        // position.sort(function (a, b) { return a - b })
+        color.push(sColor)
+        console.log(position,color)
+        rangeChange()
+    }
+    function clear11() {
+        position = []
+        color = []
+        document.getElementById('add').style.backgroundColor = 'white'
+        rangeChange()
+    }
+
+    var pos = 0
+    
+    setInterval(() => {
+            if(pos < -textLength*32*10){pos = 0}
+            pos-=1
+            ctx3.fillStyle = 'black'
+            ctx3.fillRect(0,0,320,80)
+            console.log()
+            ctx3.drawImage(offCanvas,0,0,32,32*textLength,0,pos,320,320*textLength)
+            console.log(offCanvas)
+    }, 10);
+
+</script>
+
+</html>

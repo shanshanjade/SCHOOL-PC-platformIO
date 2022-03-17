@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvasTest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .bb {
+            margin-top: 100px;
+            margin-left: 50px;
+        }
+        #canvas1 {
+            border-radius: 15px;
+        }
+        #canvas2 {
+            border-radius: 10px; 
+        }
+    </style>
+        
+</head>
+
+<body>
+    <div class="bb">
+        <canvas id="canvas1" width="400" height="400"></canvas><br>
+        <canvas id="canvas2" width="400" height="40"></canvas><br>
+    </div>
+    
+</body>
+
+<script>
+    var canvas1 = document.getElementById("canvas1");
+    var ctx1 = canvas1.getContext("2d");
+    ctx1.fillStyle = 'rgb(128,128,0)';
+    ctx1.fillRect(0,0,400,400);
+    canvas1.addEventListener("mousedown", function(e){
+
+            
+    },false);
+
+    var canvas2 = document.getElementById("canvas2");
+    var ctx2 = canvas2.getContext("2d");
+    var rainBow = ctx2.createLinearGradient(0,10,400,10);
+    rainBow.addColorStop(0,'red');
+    rainBow.addColorStop(1/7,'orange');
+    rainBow.addColorStop(2/7,'yellow');
+    rainBow.addColorStop(3/7,'green');
+    rainBow.addColorStop(4/7,'cyan');
+    rainBow.addColorStop(5/7,'blue');
+    rainBow.addColorStop(6/7,'purple');
+    rainBow.addColorStop(1,'red');
+    ctx2.fillStyle = rainBow;
+    ctx2.fillRect(0,0,400,400);
+    var isDrag = false;
+    canvas2.addEventListener("mousedown", function(e1){
+        isDrag = true;
+        canvas2.addEventListener("mousemove",function(e2){
+            if(isDrag){
+                var myColor = ctx2.getImageData(e2.offsetX,e2.offsetY,1,1).data;
+                
+                var jianbian = ctx1.createLinearGradient(0,0,400,0);
+                jianbian.addColorStop(0.1, 'white');
+                jianbian.addColorStop(1, 'rgb(' + myColor[0]+ ',' +myColor[1]+',' +myColor[2]+')');
+                // ctx1.fillStyle = 'rgb(' + myColor[0]+ ',' +myColor[1]+',' +myColor[2]+')';
+                ctx1.fillStyle = jianbian;
+                ctx1.fillRect(0,0,400,400);
+                var mask = ctx1.createLinearGradient(0,0,0,400);
+                // mask.addColorStop(0, 'rgba(0,0,0,0.4)');
+                mask.addColorStop(0.1, 'transparent');
+                mask.addColorStop(1, 'black');
+                ctx1.fillStyle = mask
+                ctx1.fillRect(0,0,400,400);
+            }
+            
+        })
+    },false);
+    canvas2.addEventListener('mouseup',function(e3){
+        isDrag =false;
+    },false)
+
+</script>
+</html>

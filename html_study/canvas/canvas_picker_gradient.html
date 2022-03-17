@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>obj_test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #canvas {
+            box-sizing: border-box;
+            width: 345px;
+            height: 375px;
+            display: inline-block;
+        }
+
+        #canvas1 {
+            box-sizing: border-box;
+            width: 30px;
+            height: 375px;
+        }
+        #canvas2{
+            box-sizing: border-box;
+            width: 375px;
+            height: 50px;
+        }
+        #position {
+            width: 375px;
+            display: inline-block;
+        }
+        #text {
+            width: 370px;
+        }
+        div button {
+            width: 185px;
+            height: 40px;
+            background-color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" width="400px" height="400px"></canvas><canvas id="canvas1" width="400px" height="400px"></canvas><br>
+        <canvas id="canvas2" width="400px" height="400px"></canvas><br>
+        <input id="position" type="range" name="position" step="0.01" min="0" max="1" onchange="change()"><br>
+        
+        
+        
+        <button id="add" onclick="add()">增加</button>
+        <button id="clear" onclick="clear11()">清空</button>
+        <input id="text" type="text">
+    </div>
+</body>
+<script>
+
+    var position = []
+    var color = []
+    var sColor = 'cyan'
+
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+    
+    var canvas1 = document.getElementById('canvas1')
+    var ctx1 = canvas1.getContext('2d')
+
+    var canvas2 = document.getElementById('canvas2')
+    var ctx2 = canvas2.getContext('2d')
+
+    //初始化canvas绘制,通过监听点击事件获取颜色
+    let gradient = ctx.createLinearGradient(0,0,400,0)
+    gradient.addColorStop(0.2,'white')
+    gradient.addColorStop(0.9,sColor)
+    ctx.fillStyle = gradient
+    ctx.fillRect(0,0,400,400)
+    let gradient_mask = ctx.createLinearGradient(0,0,0,400)
+    gradient_mask.addColorStop(0.2,'transparent')
+    gradient_mask.addColorStop(0.9,'black')
+    ctx.fillStyle = gradient_mask
+    ctx.fillRect(0,0,400,400)
+    canvas.addEventListener('mouseup',function(e){
+        let color = ctx.getImageData(e.offsetX, e.offsetY, 1, 1).data
+        sColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        document.getElementById('add').style.backgroundColor = sColor
+    })
+
+    //绘制色相条canvas1，通过监听点击事件获取颜色
+    var gradient1 = ctx1.createLinearGradient(0, 0, 0, 400)
+    gradient1.addColorStop(0, 'red')
+    gradient1.addColorStop(1 / 7, 'orange')
+    gradient1.addColorStop(2 / 7, 'yellow')
+    gradient1.addColorStop(3 / 7, 'green')
+    gradient1.addColorStop(4 / 7, 'cyan')
+    gradient1.addColorStop(5 / 7, 'blue')
+    gradient1.addColorStop(6 / 7, 'purple')
+    gradient1.addColorStop(1, 'red')
+    ctx1.fillStyle = gradient1
+    ctx1.fillRect(0, 0, 400, 400)
+    canvas1.addEventListener('mouseup', function (e) {
+        let color = ctx1.getImageData(e.offsetX, e.offsetY, 1, 1).data
+        console.log(color)
+        sColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        document.getElementById('add').style.backgroundColor = sColor
+        let gradient = ctx.createLinearGradient(0,0,400,0)
+        gradient.addColorStop(0.2,'white')
+        gradient.addColorStop(0.9,sColor)
+        ctx.fillStyle = gradient
+        ctx.fillRect(0,0,400,400)
+        let gradient_mask = ctx.createLinearGradient(0,0,0,400)
+        gradient_mask.addColorStop(0.2,'transparent')
+        gradient_mask.addColorStop(0.9,'black')
+        ctx.fillStyle = gradient_mask
+        ctx.fillRect(0,0,400,400)
+    })
+
+    
+    function change() {
+        let gradient = ctx2.createLinearGradient(0, 0, 400, 0)
+        gradient.addColorStop(0, 'white')
+        for (let i in position) {
+            gradient.addColorStop(position[i], color[i])
+        }
+        gradient.addColorStop(1, 'white')
+        ctx2.fillStyle = gradient
+        ctx2.fillRect(0, 0, 400, 400)
+    }
+
+    function add() {
+        position.push(document.getElementById('position').value)
+        // position.sort(function (a, b) { return a - b })
+        color.push(sColor)
+        console.log(position,color)
+        change()
+    }
+    function clear11() {
+        position = []
+        color = []
+        document.getElementById('add').style.backgroundColor = 'white'
+        change()
+    }
+
+
+
+
+</script>
+
+</html>

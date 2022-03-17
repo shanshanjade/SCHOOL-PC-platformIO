@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<title>删除ESP8266中GIF</title>
+	<script src="/js/vue.min.js"></script>
+	<script src="/js/axios.min.js"></script>
+</head>
+
+<body>
+	<a href="/index.html">返回主页</a>
+	<div id="app">
+		<h1 id="h1">删除ESP8266中GIF</h1>
+		<div>{{message}}</div>
+		<span v-for="(item, index) in imageList" :key="item">
+			<img :src="item" class="espimg" @click="deleteImage(index)">
+		</span>
+	</div>
+</body>
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			netLink: 'http://39.106.50.104/images/',
+			imageList_net: [],
+			imageList: [],
+			message: '',
+		},
+		methods: {
+			deleteImage(e) {
+				this.message = e
+				var formData = new FormData();
+				formData.append("filename", this.imageList[e]);
+				let that = this
+				axios.post('/delete.html', formData).then((response) => {
+					that.message = response.data
+				})
+				this.getfileList();
+			},
+			getfileList() {
+				let that = this
+				axios.get('/list')
+					.then((response) => {
+						var i
+						that.imageList = []
+						for (i in response.data.name) {
+							that.imageList.push(response.data.name[i])
+						}
+					})
+			},
+
+		},
+		mounted() {
+			this.getfileList();
+		}
+	})
+</script>
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	.espimg {
+		width: 33.3%;
+		image-rendering: pixelated;
+	}
+	.netimg {
+		width: 25%;
+		image-rendering: pixelated;
+	}
+</style>
+
+</html>

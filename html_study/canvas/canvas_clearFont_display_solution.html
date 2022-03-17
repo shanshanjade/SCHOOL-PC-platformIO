@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<!-- 高清屏canvas显示模糊解决方案 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #my_canvas {
+            border:solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="my_canvas" width="540" heihgt="180"></canvas>
+    <script type="text/javascript">
+        // 获取像素比
+        var getPixelRatio = function (context) {
+            var backingStore = context.backingStorePixelRatio ||
+                context.webkitBackingStorePixelRatio ||
+                context.mozBackingStorePixelRatio ||
+                context.msBackingStorePixelRatio ||
+                context.oBackingStorePixelRatio ||
+                context.backingStorePixelRatio || 1;
+            return (window.devicePixelRatio || 1) / backingStore;
+        };
+        //画文字
+        var myCanvas = document.getElementById("my_canvas");
+        var context = myCanvas.getContext("2d");
+        var ratio = getPixelRatio(context);
+
+        myCanvas.style.width = myCanvas.width + 'px';
+        myCanvas.style.height = myCanvas.height + 'px';
+
+        myCanvas.width = myCanvas.width * ratio;
+        myCanvas.height = myCanvas.height * ratio;
+        console.log(myCanvas.width)
+        console.log(myCanvas.height)
+        console.log(ratio)
+        // 放大倍数
+        context.scale(ratio, ratio);
+        context.font = "bold 32px 宋体";
+        context.textBaseline = 'top'
+        context.fillStyle = "#999";
+        context.fillText("我是清晰的文字", 0, 0);
+    </script>
+</body>
+
+</html>

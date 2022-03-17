@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/qswhGB2312.js"></script>
+    <script>
+        document.write(UrlEncode("郭闪")); //将汉字转换为GB2312编码串
+        document.write(getSpell("郭闪"));  //获取汉字的拼音字符串
+        var hexString = UrlEncode("郭闪"); //获得 %B9%F9%C9%C1
+        hexString = hexString.replace("%","") //去除第一个%号
+        var arr = hexString.split("%") //将剩余字符串以"%"分割为字符串数组
+        console.log(arr.length); //获得字符串数组的长度
+        var b = [];
+        for (let index = 0; index < arr.length; index++) {
+            b[index] = parseInt(arr[index], 16); //将十六进制字符串数组转换为整数字符串数组
+        } 
+        console.log(b);
+        let arraybuffer = new Uint8Array(b).buffer //将整数数组转换为ArrayBuffer
+        console.log(arraybuffer);
+        let arr2 = Array.prototype.slice.call(new Uint8Array(arraybuffer )); //此方法将ArrayBuffer转换为普通整数数组
+        console.log(arr2);
+    </script>
+</head>
+<body>
+</body>
+</html>

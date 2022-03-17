@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--汉字像素化，
+    1.使用320*320大canvas
+    2.再使用ctx.drawImage方法把canvas压缩绘制到32*32的canvas上
+    3.使用阈值过滤
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #canvas {
+            width: 320px;
+            height: 320px;
+            border: solid black;
+        }
+
+        #canvas1 {
+            width: 32px;
+            height: 32px;
+            border: solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <canvas id="canvas1"></canvas>
+    <canvas id="canvas2"></canvas>
+
+</body>
+<script>
+    
+    var isSmooth= 0
+    var isBold = 'bold'
+    var font = '宋体'
+    var showText = '上'
+    var threshold = 100   //0-255
+    var context = document.getElementById('canvas')
+    context.height = 320
+    context.width = 320
+
+    var ctx = context.getContext('2d')
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, 320, 320)
+    ctx.textBaseline = 'top'
+    ctx.font = isBold +' '+ "320px" + ' '+font
+    ctx.fillStyle = 'white'
+    ctx.fillText(showText, 0, 0)
+
+    var context1 = document.getElementById('canvas1')
+    context1.height = 32
+    context1.width = 32
+    var ctx1 = context1.getContext('2d')
+    if(isSmooth){
+        ctx1.imageSmoothingEnabled = false 
+        ctx1.mozImageSmoothingEnabled = false
+        ctx1.webkitImageSmoothingEnabled = false
+        ctx1.msImageSmoothingEnabled = false
+    }
+
+    ctx1.drawImage(context, 0, 0, 32, 32)
+    var offData = ctx1.getImageData(0, 0, 32, 32)
+
+    function yuzhi(x){  //阈值操作
+        if (x > threshold) return 255
+        else return 0
+    }
+    var c =  new Uint8Array()
+    c = offData.data.map(yuzhi)
+    for (let i in offData.data){  // 数组不可以直接赋值给对象中的数组，要用for。。。in
+        offData.data[i] = c[i]
+    }
+
+    var context2 = document.getElementById('canvas2')
+    context2.height = 320
+    context2.width = 320
+    var ctx2 = context2.getContext('2d')
+
+
+    for (let j = 0; j < offData.width; j++) {
+        for (let i = 0; i < offData.height; i++) {
+            ctx2.fillStyle = "rgba(" + offData.data[(i * offData.width + j) * 4] + ',' + offData.data[(i * offData.width + j) * 4 + 1] + ',' + offData.data[(i * offData.width + j) * 4 + 2] + ',' + offData.data[(i * offData.width + j) * 4 + 3] + ')'
+            ctx2.fillRect(j * 10, i * 10, 10, 10)
+        }
+    }
+
+</script>
+
+</html>

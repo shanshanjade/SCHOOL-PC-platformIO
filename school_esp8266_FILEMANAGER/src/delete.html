@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title></title>
+</head>
+<body onload="ajax1()">
+    <h1>删除文件</h1>
+    <a id="test"></a>
+    <form id="demo" method="POST">
+    </form>
+
+</body>
+<script>
+    function ajax1(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var i;
+                var json;
+                var st = "";
+                var demo = document.getElementById("demo");
+                json =  JSON.parse(this.responseText);
+                for (i in json.name){
+                    var newInput = document.createElement("input");
+                    var newText = document.createElement("a");
+                    var newLine = document.createElement("br");
+                    newInput.type = "radio";
+                    newInput.name = "filename";
+                    newInput.value = json.name[i];
+                    newText.innerText = json.name[i];
+                    demo.appendChild(newInput);
+                    demo.appendChild(newText);
+                    demo.appendChild(newLine);
+                }
+                var newSubmit = document.createElement("input");
+                newSubmit.type = "submit";
+                newSubmit.value = "提交";
+                demo.appendChild(newSubmit);
+            }
+        };
+        xhttp.open("GET", "/list", true);
+        xhttp.send();
+    };
+</script>
+</html>

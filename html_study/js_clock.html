@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ajax_test</title>
+</head>
+<script>
+  function showDateTime() {
+    var sWeek = new Array("日", "一", "二", "三", "四", "五", "六");
+    var myDate = new Date();
+    var sYear = myDate.getFullYear();
+    var sMonth = myDate.getMonth() + 1;
+    var sDate = myDate.getDate();
+    var sDay = sWeek[myDate.getDay()];
+    var h = myDate.getHours();
+    var m = myDate.getMinutes();
+    var s = myDate.getSeconds();
+    document.getElementById("date").innerHTML = (sYear + "年" + sMonth + "月" + sDate + "日" + "星期" + sDay + "<br/>");
+    h = formatTwoDigits(h);
+    m = formatTwoDigits(m);
+    s = formatTwoDigits(s);
+    document.getElementById("msg").innerHTML = (h + ":" + m + ":" + s + "<br/>");
+    setTimeout("showDateTime()", 1000);
+  }
+  window.onload = showDateTime;
+  function formatTwoDigits(s) {
+    if (s < 10)
+      return "0" + s;
+    else
+      return s;
+  }
+</script>
+<script>
+  // function ajax(){
+  //     var xhttp = new XMLHttpRequest();
+  //     xhttp.onreadystatechange = function() {
+  //         if (this.readyState == 4 && this.status == 200) {
+  //             var i;
+  //             var json;
+  //             var st = "";
+  //             json =  JSON.parse(this.responseText);
+  //             for (i in json.name){
+  //                 st += "<a href=\"" + json.name[i] + "\">" + json.name[i] + "</a><br>"
+  //             }
+  //             document.getElementById("demo").innerHTML = st;
+  //         }
+  //     };
+  //     xhttp.open("POST", "/index.html", true);
+  //     xhttp.send();
+  // };
+  var myArray = new ArrayBuffer(512);
+  var longInt8View = new Uint8Array(myArray);
+
+  for (var i = 0; i < longInt8View.length; i++) {
+    longInt8View[i] = i % 255;
+  }
+  var xhr = new XMLHttpRequest;
+  xhr.open("POST", url, false);
+  xhr.send(myArray);
+</script>
+<style>
+  img {
+    image-rendering: pixelated;
+    border-radius: 5px;
+  }
+</style>
+
+<body>
+  <center>
+    <h1 id="date"></h1>
+    <span id="msg"></span>
+    <img src="/5star.gif" width="320" height="80" alt="">
+    <img src="/sea.gif" width="320" height="80" alt="">
+  </center>
+</body>
+
+</html>
