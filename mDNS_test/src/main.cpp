@@ -1,54 +1,76 @@
-// #include <Arduino.h>
-#include <ESP8266WiFi.h>
-void smartConfig()
-{
-  WiFi.begin();
-  for (int i = 0; i < 3; i++)
+#include <Arduino.h>
+#include <MyArray.hpp>
+#define LOG(str,...) Serial.printf(str,##__VA_ARGS__);Serial.println()
+void printIntArr(MyArray<int> & arr){
+  for (int i = 0; i < arr.getSize(); i++)
   {
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      Serial.println("AutoConfig Success");
-      Serial.printf("SSID:%s\r\n", WiFi.SSID().c_str());
-      Serial.printf("PSW:%s\r\n", WiFi.psk().c_str());
-      //WiFi.printDiag(Serial); //打印关键的Wi-Fi诊断信息，信息比较多
-      break;
-    }
-    else
-    {
-      Serial.println("AutoConfig Waiting...");
-      //Serial.println(WiFi.status());
-      delay(1000);
-    }
+    Serial.println(arr[i]); 
   }
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("AutoConfig Faild!" );
-    WiFi.mode(WIFI_STA);
-    Serial.println("\r\nWait for Smartconfig");
-    WiFi.beginSmartConfig();
-    while (1)
-    {
-      Serial.print(".");
-      if (WiFi.smartConfigDone())
-      {
-        Serial.println("SmartConfig Success");
-        Serial.printf("SSID:%s\r\n", WiFi.SSID().c_str());
-        Serial.printf("PSW:%s\r\n", WiFi.psk().c_str());
-        WiFi.setAutoConnect(true);  // 设置自动连接
-        break;
-      }
-      delay(3000);
-    }
+  
+}
+void test01(){
+  Serial.println("void test01");
+  MyArray<int> arr1(10);
+  for (int i = 0; i < 5; i++)
+  { 
+    arr1.Push_Back(i);
   }
-}
-void setup()
-{
-  Serial.begin(115200);  
-  smartConfig();//这里调用一键配网函数,替换上面的普通配网
-}
-void loop()
-{
-  // put your main code here, to run repeatedly:
+  printIntArr(arr1);
+  LOG("arr1的容量为%d", arr1.getCapacity());
+  LOG("arr1的大小为%d", arr1.getSize());
+
+  MyArray<int> arr2(11);
+  for (int i = 0; i < 5; i++)
+  { 
+    arr2.Push_Back(i+100);
+  }
+  arr2.Pop_Back();
+  printIntArr(arr2);
+  LOG("arr1的容量为%d\n", arr2.getCapacity());
+  LOG("arr1的大小为%d\n", arr2.getSize());
 }
 
-//==========将下列代码添加到需要一键配网项目代码的最后==========
+class Person{
+public:
+  Person(){};
+  Person(String name, int age){
+    this->m_name =name;
+    this->m_age = age;
+  }
+  String m_name;
+  int m_age;
+};
+void printPersonArr(MyArray<Person> & arr){
+  for (int i = 0; i < arr.getSize(); i++)
+  {   
+    LOG("姓名：%s  年龄：%d", arr[i].m_name, arr[i].m_age);
+  }
+  
+}
+void test02(){
+  MyArray<Person> personarr(10);
+  Person p1("sunwukong", 999);
+  Person p2("zhubajie", 888);
+  Person p3("shaheshang", 777);
+  Person p4("tangseng", 30);
+  personarr.Push_Back(p1);
+  personarr.Push_Back(p2);
+  personarr.Push_Back(p3);
+  personarr.Push_Back(p4);
+  printPersonArr(personarr);
+  LOG("good day");
+  LOG("log1 good day: %d", 365);
+  LOG("是否换行检测");
+}
+
+void setup(){
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("开始");
+  // test01();
+  test02();
+
+
+}
+
+void loop(){}
