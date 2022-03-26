@@ -58,19 +58,32 @@ void test02(){
   personarr.Push_Back(p3);
   personarr.Push_Back(p4);
   printPersonArr(personarr);
-  LOG("good day");
-  LOG("log1 good day: %d", 365);
-  LOG("是否换行检测");
 }
 
 void setup(){
   Serial.begin(115200);
+  while(!Serial);
   delay(1000);
-  Serial.println("开始");
   // test01();
   test02();
 
 
 }
 
-void loop(){}
+void loop(){
+  Serial.print("SHA1:");
+  Serial.println(sha1("abc"));
+
+  // usage as ptr
+  // SHA1:a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+  uint8_t hash[20];
+  sha1("test", &hash[0]);
+
+  Serial.print("SHA1:");
+  for (uint16_t i = 0; i < 20; i++) {
+    Serial.printf("%02x", hash[i]);
+  }
+  Serial.println();
+  delay(3000);
+
+}
